@@ -1,0 +1,19 @@
+{
+  "name": "n8n-workflows",
+  "version": "0.1.0",
+  "private": true,
+  "description": "n8n workflows as code, run in Docker, verified with tests",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:integration": "node --test --test-concurrency=1 \"tests/integration/**/*.test.mjs\"",
+    "test:all": "npm test && npm run test:integration",
+    "n8n:up": "docker compose up -d --wait",
+    "n8n:down": "docker compose down",
+    "n8n:logs": "docker compose logs -f n8n",
+    "n8n:deploy": "node scripts/deploy.mjs"
+  }
+}
