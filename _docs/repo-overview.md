@@ -84,4 +84,4 @@ body. They run one file at a time (`--test-concurrency=1`). Webhook nodes must u
 
 Branch per feature (`feature/`, `fix/`, `docs/`, `chore/`), Conventional Commits, never
 commit on `main`. The GitHub remote is `origin` (github.com/shoonya0/n8n, **private**),
-and nothing has been pushed yet.
+with `main` pushed and work merged through squash PRs.
