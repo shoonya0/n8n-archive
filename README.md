@@ -12,4 +12,5 @@ npm run test:all       # unit + integration tests
 
 Requires Docker and Node.js 22+. No npm dependencies (tests use `node:test`).
 
-See [CLAUDE.md](CLAUDE.md) for the TDD workflow and conventions.
+See [CLAUDE.md](CLAUDE.md) for the TDD workflow and conventions, and
+[_docs/](_docs/README.md) for the repo overview, current progress and project backlog.

@@ -18,9 +18,17 @@ npm run test:integration  # integration: requires n8n:up + n8n:deploy
 npm run n8n:down
 ```
 
+## Project docs (`_docs/`)
+- Start each session by reading `_docs/progress.md` (status, next steps, open decisions).
+- Superpowers output goes here, **not** `docs/superpowers/`: specs →
+  `_docs/specs/YYYY-MM-DD-<topic>-design.md`, plans → `_docs/plans/YYYY-MM-DD-<topic>-plan.md`.
+- Candidate projects: `_docs/backlog.md`; background research: `_docs/research/`.
+- At the end of every feature, update `_docs/progress.md` on the same branch.
+
 ## Workflow (TDD, superpowers)
 Use the superpowers skills: brainstorming → writing-plans → test-driven-development →
-verification-before-completion. For every new or changed workflow:
+verification-before-completion (full steps: `_docs/how-to-build-a-project.md`).
+For every new or changed workflow:
 1. **Red:** write the integration test for the webhook's contract (request → expected
    response) in `tests/integration/<name>.test.mjs`. Run it and watch it fail.
 2. **Green:** build/edit `workflows/<name>.json` (with the n8n skills/MCP for node
