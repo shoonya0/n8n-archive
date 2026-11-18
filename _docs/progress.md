@@ -11,7 +11,7 @@ _Last updated: 2026-11-18_
 | `hello-webhook` (reference workflow) | ✅ done, 3/3 integration tests pass. Merged into `main` (PR #1) |
 | `_docs/` (this folder) | ✅ merged into `main` (PR #2) |
 | CI (GitHub Actions) | ✅ `.github/workflows/ci.yml`: unit + integration (n8n in Docker) on every PR and push to `main` |
-| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**. ⚠️ PRs #4, #5 and #6 were squash-merged, so `81da457`, `2d7e229` and `c8c2a93` show the profile name, not `shoonya0`. Squash is still enabled in repo settings (checked 2026-11-18) |
+| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**. ⚠️ PRs #4, #5 and #6 were squash-merged (`81da457`, `2d7e229`, `c8c2a93`) and PR #7 got a merge commit (`df7e312`): those show the profile name, not `shoonya0`. Only rebase-merge keeps `shoonya0` (PRs #3 and #8). Squash and merge commits are still enabled in repo settings (checked 2026-11-18) |
 | First real project: **J1 Job radar v1** | ✅ merged into `main` (PR #5, `2d7e229`), CI green. `POST /webhook/jobs/radar`, 11/11 integration tests pass. [Spec](specs/2026-11-18-job-radar-design.md), [plan](plans/2026-11-18-job-radar-plan.md) |
 
 ## Done
@@ -45,8 +45,10 @@ _Last updated: 2026-11-18_
   (`OPTIONS`) to every deployed webhook until each answers 204. Measured: 204 at the same
   moment a real POST starts working; it doesn't run the workflow. Logic in
   `scripts/lib/readiness.mjs`, unit-tested. Merged as PR #8 (rebase-merged, author `shoonya0`).
+- **2026-11-18** PR #7 (progress update) rebased onto PR #8 to fix a `progress.md` conflict,
+  then merged. Everything up to here is on `main`; no open PRs.
 
-## Last verified (2026-11-18, on `main` at `d91a5de`, after PR #8)
+## Last verified (2026-11-18, on `main` at `df7e312`, after PR #7; CI run #15 green)
 
 ```
 npm test                  → 41 pass, 0 fail
@@ -64,7 +66,7 @@ npm run test:integration  → 14 pass, 0 fail  (hello 3 + job radar 11)
 
 - **Squash merges keep putting the profile name on `main`.** Fix: GitHub → Settings →
   General → Pull Requests, untick "Allow squash merging" and "Allow merge commits" (Claude's
-  attempt was blocked by permissions). Optionally rewrite `81da457`, `2d7e229` and `c8c2a93` to
+  attempt was blocked by permissions). Optionally rewrite `81da457`, `2d7e229`, `c8c2a93` and `df7e312` to
   `shoonya0` with one more force-push (needs the owner's OK).
 - Track C (developer/job-hunt) chosen first, 2026-11-18. Which real boards and keywords go
   in `profile.json` for J1 v2? (The owner's list of target companies.)
