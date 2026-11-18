@@ -1,0 +1,37 @@
+{
+  "apiVersion": "1",
+  "jobs": [
+    {
+      "id": "b1b2c3d4-0001-4000-8000-000000000001",
+      "title": "  Backend Engineer, Golang Services ",
+      "department": "Engineering",
+      "location": "Remote (APAC)",
+      "secondaryLocations": [{ "location": "Singapore" }],
+      "isRemote": true,
+      "isListed": true,
+      "workplaceType": "Remote",
+      "publishedAt": "2026-11-12T00:00:00.000+00:00",
+      "jobUrl": "https://jobs.ashbyhq.com/initech/b1b2c3d4-0001-4000-8000-000000000001"
+    },
+    {
+      "id": "b1b2c3d4-0002-4000-8000-000000000002",
+      "title": "Backend Engineer (Hidden)",
+      "location": "Remote",
+      "secondaryLocations": [],
+      "isRemote": true,
+      "isListed": false,
+      "publishedAt": "2026-11-13T00:00:00.000+00:00",
+      "jobUrl": "https://jobs.ashbyhq.com/initech/b1b2c3d4-0002-4000-8000-000000000002"
+    },
+    {
+      "id": "b1b2c3d4-0003-4000-8000-000000000003",
+      "title": "Data Engineer",
+      "location": "Remote",
+      "secondaryLocations": [],
+      "isRemote": true,
+      "isListed": true,
+      "publishedAt": "2026-11-13T00:00:00.000+00:00",
+      "jobUrl": "https://jobs.ashbyhq.com/initech/b1b2c3d4-0003-4000-8000-000000000003"
+    }
+  ]
+}

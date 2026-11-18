@@ -1,0 +1,58 @@
+{
+  "jobs": [
+    {
+      "id": 1001,
+      "title": "Senior Backend Engineer (Golang)",
+      "company_name": "Acme",
+      "location": { "name": "Remote, India" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1001",
+      "first_published": "2026-11-10T09:00:00+00:00",
+      "updated_at": "2026-11-15T09:00:00+00:00"
+    },
+    {
+      "id": 1002,
+      "title": "Senior Backend Engineer (Golang)",
+      "company_name": "Acme",
+      "location": { "name": "Remote, India" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1002",
+      "first_published": "2026-10-01T09:00:00+00:00",
+      "updated_at": "2026-10-02T09:00:00+00:00"
+    },
+    {
+      "id": 1003,
+      "title": "Backend Engineering Manager",
+      "company_name": "Acme",
+      "location": { "name": "Remote" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1003",
+      "first_published": "2026-11-11T09:00:00+00:00",
+      "updated_at": "2026-11-11T09:00:00+00:00"
+    },
+    {
+      "id": 1004,
+      "title": "Node.js Backend Developer",
+      "company_name": "Acme",
+      "location": { "name": "Berlin, Germany" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1004",
+      "first_published": "2026-11-11T09:00:00+00:00",
+      "updated_at": "2026-11-11T09:00:00+00:00"
+    },
+    {
+      "id": 1005,
+      "title": "Frontend Engineer",
+      "company_name": "Acme",
+      "location": { "name": "Remote" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1005",
+      "first_published": "2026-11-11T09:00:00+00:00",
+      "updated_at": "2026-11-11T09:00:00+00:00"
+    },
+    {
+      "id": 1006,
+      "title": "Platform Engineer (Golang)",
+      "company_name": "Acme",
+      "location": { "name": "Bengaluru, India" },
+      "absolute_url": "https://job-boards.greenhouse.io/acme/jobs/1006",
+      "updated_at": "2026-11-05T12:00:00+05:30"
+    }
+  ],
+  "meta": { "total": 6 }
+}
