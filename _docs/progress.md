@@ -38,11 +38,17 @@ _Last updated: 2026-11-18_
   with a `job-fixtures` container (no real API calls in tests). Smoke-tested against live
   GitLab, Spotify and Ramp boards. Lesson: `new URL()` doesn't work in n8n's Code-node
   sandbox, though plain-Node unit tests pass; only the integration test caught it.
+- **2026-11-18** Fix: the "Editor is now accessible" wait wasn't enough. With two
+  workflows, CI run #11 (PR #7) still got 404s on `/webhook/hello`, because n8n logs that
+  line before it processes published workflows. `deploy.mjs` now sends a CORS preflight
+  (`OPTIONS`) to every deployed webhook until each answers 204. Measured: 204 at the same
+  moment a real POST starts working; it doesn't run the workflow. Logic in
+  `scripts/lib/readiness.mjs`, unit-tested.
 
 ## Last verified (2026-11-18, on `main` at `2d7e229`)
 
 ```
-npm test                  → 37 pass, 0 fail
+npm test                  → 41 pass, 0 fail
 npm run test:integration  → 14 pass, 0 fail  (hello 3 + job radar 11)
 ```
 
