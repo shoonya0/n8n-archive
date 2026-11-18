@@ -26,7 +26,12 @@ When something breaks, use `superpowers:systematic-debugging` before changing co
 - exactly one trigger; for a webhook trigger, a unique `path`, a `webhookId` (UUID) and
   `responseMode: responseNode`
 - no secrets: use n8n credentials or `$env`
-- outside APIs can be faked in tests (`$env.DRY_RUN` or a fake endpoint)
+- outside APIs are faked in tests with a fixture container (see `job-fixtures` in
+  `docker-compose.yml` and the job radar's test-only `apiBase`)
+- Code-node logic gets unit tests: load the workflow JSON, run the node's `jsCode` with fake
+  `$input`/`$()` (pattern: `tests/unit/job-radar.test.mjs`)
+- the Code-node sandbox is not plain Node: `new URL()` failed there although unit tests
+  passed, so always confirm with the integration test
 
 Use `workflows/hello-webhook.json` and `tests/integration/hello-webhook.test.mjs` as the
 reference example (webhook → validate → respond 200 / 400).
