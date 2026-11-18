@@ -10,7 +10,7 @@ _Last updated: 2026-11-18_
 | Unit test rules for workflow JSON | ✅ done, 9/9 pass |
 | `hello-webhook` (reference workflow) | ✅ done, 3/3 integration tests pass. Merged into `main` (PR #1) |
 | `_docs/` (this folder) | ✅ merged into `main` (PR #2) |
-| CI (GitHub Actions) | ⬜ not started |
+| CI (GitHub Actions) | ✅ `.github/workflows/ci.yml`: unit + integration (n8n in Docker) on every PR and push to `main` |
 | Pushed to GitHub | ✅ `main` pushed; `origin` is **private**; PRs squash-merged |
 | First real project | ⬜ not chosen; see [backlog.md](backlog.md) |
 
@@ -25,6 +25,10 @@ _Last updated: 2026-11-18_
   superpowers brainstorming), and backend/job-hunt automations. Now in `research/`.
 - **2026-11-18** Added `_docs/`: overview, build process, backlog, progress, and
   `specs/`/`plans/` folders for superpowers output.
+- **2026-11-18** Commit authors on `main` rewritten to `shoonya0` (one-time force-push).
+  PRs are merged with `gh pr merge --rebase`, never squash (squash uses the profile name).
+- **2026-11-18** CI: GitHub Actions runs `npm test`, then starts n8n in Docker, deploys
+  and runs `npm run test:integration`.
 
 ## Last verified (2026-11-18)
 
@@ -35,8 +39,7 @@ npm run test:integration  → 3 pass, 0 fail   (n8n container healthy)
 
 ## Next
 
-1. Add CI: GitHub Actions running `npm test` on push and PR.
-2. Pick the first project from [backlog.md](backlog.md) and start with
+1. Pick the first project from [backlog.md](backlog.md) and start with
    `superpowers:brainstorming`.
 
 ## Open decisions
