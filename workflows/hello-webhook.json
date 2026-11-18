@@ -1,0 +1,94 @@
+{
+  "id": "Q6auFVVSnAZDChYh",
+  "name": "Hello Webhook",
+  "nodes": [
+    {
+      "id": "3f1c9a52-0d1e-4b6a-9c11-1a2b3c4d5e01",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "9760751a-91d3-46d6-823b-c909fec25f8f",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hello",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "3f1c9a52-0d1e-4b6a-9c11-1a2b3c4d5e02",
+      "name": "Has Name?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [220, 0],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "c0a1b2c3-d4e5-4f60-8a9b-0c1d2e3f4a5b",
+              "leftValue": "={{ String($json.body.name ?? '').trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3f1c9a52-0d1e-4b6a-9c11-1a2b3c4d5e03",
+      "name": "Respond Greeting",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, -100],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ message: 'Hello, ' + String($json.body.name).trim() + '!' }) }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "3f1c9a52-0d1e-4b6a-9c11-1a2b3c4d5e04",
+      "name": "Respond Missing Name",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [440, 100],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{\"error\": \"name is required\"}",
+        "options": {
+          "responseCode": 400
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Has Name?", "type": "main", "index": 0 }]]
+    },
+    "Has Name?": {
+      "main": [
+        [{ "node": "Respond Greeting", "type": "main", "index": 0 }],
+        [{ "node": "Respond Missing Name", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
