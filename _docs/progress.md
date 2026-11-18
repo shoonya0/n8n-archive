@@ -11,8 +11,8 @@ _Last updated: 2026-11-18_
 | `hello-webhook` (reference workflow) | ✅ done, 3/3 integration tests pass. Merged into `main` (PR #1) |
 | `_docs/` (this folder) | ✅ merged into `main` (PR #2) |
 | CI (GitHub Actions) | ✅ `.github/workflows/ci.yml`: unit + integration (n8n in Docker) on every PR and push to `main` |
-| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**; PRs rebase-merged |
-| First real project: **J1 Job radar v1** | 🟡 PR open (`feature/job-radar`). `POST /webhook/jobs/radar`, 11/11 integration tests pass. [Spec](specs/2026-11-18-job-radar-design.md), [plan](plans/2026-11-18-job-radar-plan.md) |
+| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**. ⚠️ PRs #4 and #5 were squash-merged, so `81da457` and `2d7e229` show the profile name, not `shoonya0` |
+| First real project: **J1 Job radar v1** | ✅ merged into `main` (PR #5, `2d7e229`), CI green. `POST /webhook/jobs/radar`, 11/11 integration tests pass. [Spec](specs/2026-11-18-job-radar-design.md), [plan](plans/2026-11-18-job-radar-plan.md) |
 
 ## Done
 
@@ -39,7 +39,7 @@ _Last updated: 2026-11-18_
   GitLab, Spotify and Ramp boards. Lesson: `new URL()` doesn't work in n8n's Code-node
   sandbox, though plain-Node unit tests pass; only the integration test caught it.
 
-## Last verified (2026-11-18)
+## Last verified (2026-11-18, on `main` at `2d7e229`)
 
 ```
 npm test                  → 37 pass, 0 fail
@@ -48,14 +48,17 @@ npm run test:integration  → 14 pass, 0 fail  (hello 3 + job radar 11)
 
 ## Next
 
-1. Owner reviews and merges the job radar PR.
-2. **J1 v2**: twice-a-day Schedule trigger workflow that calls the radar with a
+1. **J1 v2**: twice-a-day Schedule trigger workflow that calls the radar with a
    `profile.json` + board list kept in the repo, and sends the top 10 to Telegram (needs a
    bot token as an n8n credential). Remember already-sent jobs so each one is sent only once.
-3. **J2 Tracker** (Gmail → application status table), see [backlog.md](backlog.md).
+2. **J2 Tracker** (Gmail → application status table), see [backlog.md](backlog.md).
 
 ## Open decisions
 
+- **Squash merges keep putting the profile name on `main`.** Fix: GitHub → Settings →
+  General → Pull Requests, untick "Allow squash merging" and "Allow merge commits" (Claude's
+  attempt was blocked by permissions). Optionally rewrite `81da457` and `2d7e229` to
+  `shoonya0` with one more force-push (needs the owner's OK).
 - Track C (developer/job-hunt) chosen first, 2026-11-18. Which real boards and keywords go
   in `profile.json` for J1 v2? (The owner's list of target companies.)
 - Repo made **private** (2026-11-18), so `_docs/research/` (personal plans) can stay in
