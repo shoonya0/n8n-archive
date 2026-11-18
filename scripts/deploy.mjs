@@ -4,6 +4,7 @@
 import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, basename } from 'node:path';
+import { webhookProbes, waitForWebhooks } from './lib/readiness.mjs';
 
 const WORKFLOW_DIR = 'workflows';
 const CONTAINER = process.env.N8N_CONTAINER ?? 'n8n';
@@ -24,22 +25,12 @@ for (const file of files) {
   run('docker', ['exec', CONTAINER, 'n8n', 'publish:workflow', `--id=${wf.id}`]);
 }
 
-// n8n answers /healthz (so compose reports "healthy") a few seconds before it has
-// registered published webhooks; it logs READY_LINE only once startup is finished.
-const READY_LINE = 'Editor is now accessible';
-const READY_TIMEOUT_MS = 90_000;
-const readyCount = () =>
-  execFileSync('docker', ['logs', CONTAINER], { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' })
-    .split(READY_LINE).length - 1;
-
 console.log('restart n8n to register webhooks');
-const before = readyCount();
 run('docker', ['compose', 'restart', 'n8n']);
 run('docker', ['compose', 'up', '-d', '--wait', 'n8n']);
 
-const deadline = Date.now() + READY_TIMEOUT_MS;
-while (readyCount() <= before) {
-  if (Date.now() > deadline) throw new Error(`n8n did not finish starting within ${READY_TIMEOUT_MS / 1000}s`);
-  await new Promise((r) => setTimeout(r, 500));
-}
-console.log('deployed:', files.join(', '));
+// "healthy" is not "webhooks registered": wait for each deployed webhook (see lib/readiness.mjs).
+const BASE_URL = process.env.N8N_BASE_URL ?? `http://localhost:${process.env.N8N_PORT ?? 5678}`;
+const probes = files.flatMap((f) => webhookProbes(JSON.parse(readFileSync(join(WORKFLOW_DIR, f), 'utf8'))));
+await waitForWebhooks(BASE_URL, probes);
+console.log('deployed:', files.join(', '), `(${probes.length} webhook(s) registered)`);
