@@ -11,7 +11,7 @@ _Last updated: 2026-11-18_
 | `hello-webhook` (reference workflow) | ✅ done, 3/3 integration tests pass. On `feature/hello-webhook`, **not merged into `main`** |
 | `_docs/` (this folder) | 🟡 on `docs/project-docs`, branched from `feature/hello-webhook` |
 | CI (GitHub Actions) | ⬜ not started |
-| Pushed to GitHub | ⬜ nothing pushed; `origin` is **public** and empty |
+| Pushed to GitHub | ⬜ nothing pushed; `origin` is **private** and empty |
 | First real project | ⬜ not chosen; see [backlog.md](backlog.md) |
 
 ## Done
@@ -36,7 +36,7 @@ npm run test:integration  → 3 pass, 0 fail   (n8n container healthy)
 ## Next
 
 1. Merge `feature/hello-webhook`, then `docs/project-docs`, into `main` and push (first push
-   to the public repo; check the research files are OK to publish).
+   to the private repo).
 2. Add CI: GitHub Actions running `npm test` on push and PR.
 3. Pick the first project from [backlog.md](backlog.md) and start with
    `superpowers:brainstorming`.
@@ -44,6 +44,6 @@ npm run test:integration  → 3 pass, 0 fail   (n8n container healthy)
 ## Open decisions
 
 - Which track first: money (A), reach-out copilot (B) or developer/job-hunt (C)?
-- Is it OK for `_docs/research/` to be public? It includes personal plans (job hunt, the
-  reach-out copilot). If not, gitignore it or make the repo private.
+- Repo made **private** (2026-11-18), so `_docs/research/` (personal plans) can stay in
+  git. If it ever goes public again, remove or gitignore `research/` first.
 - Reach-out copilot decisions: see backlog, Track B.
