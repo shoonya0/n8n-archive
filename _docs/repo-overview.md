@@ -42,7 +42,11 @@ Docker, and Node.js 22 or newer.
 `scripts/deploy.mjs` runs `n8n import:workflow` for each file (the `workflows/` folder is
 mounted read-only at `/workflows` in the container). It then runs `n8n publish:workflow
 --id=<id>` and restarts the container, because n8n 2.x only registers production webhooks
-(`/webhook/<path>`) for **published** workflows after startup. The fixed `id` in each JSON
+(`/webhook/<path>`) for **published** workflows after startup. Docker reporting n8n as
+"healthy" (and even the "Editor is now accessible" log line) comes **before** the webhooks
+are registered, so the script then sends a CORS preflight (`OPTIONS /webhook/<path>`) to
+every deployed webhook until each one answers 204 (90s limit,
+`scripts/lib/readiness.mjs`). The fixed `id` in each JSON
 file makes a re-deploy overwrite the workflow instead of creating a copy.
 
 ## What the unit tests enforce (`tests/unit/workflows.test.mjs`)
