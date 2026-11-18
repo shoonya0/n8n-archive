@@ -13,6 +13,7 @@ tests/integration/          real HTTP calls to webhooks on the dockerised n8n  (
 scripts/deploy.mjs          import + publish workflows into the container, restart n8n
 docker-compose.yml          n8n pinned to N8N_VERSION (default 2.46.3), data in volume n8n_data
 .env.example                copy to .env, set N8N_ENCRYPTION_KEY (.env is gitignored)
+.github/workflows/ci.yml    CI: unit tests, then n8n in Docker + integration tests
 .claude/settings.json       enables the superpowers plugin for this project
 CLAUDE.md                   rules for Claude Code working in this repo
 _docs/                      this folder: overview, progress, backlog, specs, plans, research
@@ -62,6 +63,16 @@ One file per workflow, `tests/integration/<name>.test.mjs`, calls
 body. They run one file at a time (`--test-concurrency=1`). Webhook nodes must use
 `responseMode: responseNode` or `lastNode` so a test can assert the response.
 
+## CI (`.github/workflows/ci.yml`)
+
+Runs on every pull request and every push to `main`:
+1. **unit**: `npm test` on Node 22.
+2. **integration** (after unit passes): creates `.env` with a throwaway encryption key, runs
+   `npm run n8n:up`, `npm run n8n:deploy` and `npm run test:integration`, prints n8n logs if
+   something fails, then `docker compose down -v`.
+
+A PR is merged only when both jobs are green.
+
 ## Rules
 
 - Never put secrets in workflow JSON. Use n8n credentials or `$env`.
@@ -84,4 +95,5 @@ body. They run one file at a time (`--test-concurrency=1`). Webhook nodes must u
 
 Branch per feature (`feature/`, `fix/`, `docs/`, `chore/`), Conventional Commits, never
 commit on `main`. The GitHub remote is `origin` (github.com/shoonya0/n8n, **private**),
-with `main` pushed and work merged through squash PRs.
+with `main` pushed. PRs are merged with `gh pr merge --rebase --delete-branch`, never
+squash: GitHub writes squash commits under the profile display name, not `shoonya0`.

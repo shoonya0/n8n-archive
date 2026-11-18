@@ -7,6 +7,7 @@ n8n workflows live as JSON in `workflows/`, run in Docker, and are verified with
 - `tests/unit/` — static checks on workflow JSON (no Docker needed). `npm test`
 - `tests/integration/` — call real webhooks on the dockerised n8n. `npm run test:integration`
 - `scripts/deploy.mjs` — import + publish workflows into the container, restart n8n.
+- `.github/workflows/ci.yml` — CI on every PR/push to main: unit, then n8n in Docker + integration.
 - `docker-compose.yml` — n8n pinned to a version (`N8N_VERSION`); data in volume `n8n_data`.
 
 ## Commands
