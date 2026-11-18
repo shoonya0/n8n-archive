@@ -24,7 +24,22 @@ for (const file of files) {
   run('docker', ['exec', CONTAINER, 'n8n', 'publish:workflow', `--id=${wf.id}`]);
 }
 
+// n8n answers /healthz (so compose reports "healthy") a few seconds before it has
+// registered published webhooks; it logs READY_LINE only once startup is finished.
+const READY_LINE = 'Editor is now accessible';
+const READY_TIMEOUT_MS = 90_000;
+const readyCount = () =>
+  execFileSync('docker', ['logs', CONTAINER], { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' })
+    .split(READY_LINE).length - 1;
+
 console.log('restart n8n to register webhooks');
+const before = readyCount();
 run('docker', ['compose', 'restart', 'n8n']);
 run('docker', ['compose', 'up', '-d', '--wait', 'n8n']);
+
+const deadline = Date.now() + READY_TIMEOUT_MS;
+while (readyCount() <= before) {
+  if (Date.now() > deadline) throw new Error(`n8n did not finish starting within ${READY_TIMEOUT_MS / 1000}s`);
+  await new Promise((r) => setTimeout(r, 500));
+}
 console.log('deployed:', files.join(', '));
