@@ -71,7 +71,7 @@ Runs on every pull request and every push to `main`:
    `npm run n8n:up`, `npm run n8n:deploy` and `npm run test:integration`, prints n8n logs if
    something fails, then `docker compose down -v`.
 
-A PR is merged only when both jobs are green.
+The owner reviews each PR and merges it once both jobs are green. Claude only opens PRs.
 
 ## Rules
 
@@ -95,5 +95,6 @@ A PR is merged only when both jobs are green.
 
 Branch per feature (`feature/`, `fix/`, `docs/`, `chore/`), Conventional Commits, never
 commit on `main`. The GitHub remote is `origin` (github.com/shoonya0/n8n, **private**),
-with `main` pushed. PRs are merged with `gh pr merge --rebase --delete-branch`, never
+with `main` pushed. Claude opens PRs; the owner merges them with
+`gh pr merge --rebase --delete-branch`, never
 squash: GitHub writes squash commits under the profile display name, not `shoonya0`.

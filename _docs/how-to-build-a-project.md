@@ -15,7 +15,7 @@ In Claude Code, just describe what you want and the matching skill runs, or name
 | 7 | **Verify** with real output before saying it's done | `superpowers:verification-before-completion` | test output |
 | 8 | Update [progress.md](progress.md); commit (Conventional Commits) | — | commit(s) |
 | 9 | Review if it's non-trivial | `/code-review`, `superpowers:requesting-code-review` | findings fixed |
-| 10 | Finish: push, open a PR, merge, delete the branch | `superpowers:finishing-a-development-branch` | merged into `main` |
+| 10 | Finish: push and open a PR. **Claude stops here**: no merge, no waiting on CI. The owner reviews and merges (`gh pr merge --rebase --delete-branch`) | `superpowers:finishing-a-development-branch` | an open PR |
 
 When something breaks, use `superpowers:systematic-debugging` before changing code.
 
