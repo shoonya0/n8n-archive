@@ -11,7 +11,7 @@ _Last updated: 2026-11-18_
 | `hello-webhook` (reference workflow) | ✅ done, 3/3 integration tests pass. Merged into `main` (PR #1) |
 | `_docs/` (this folder) | ✅ merged into `main` (PR #2) |
 | CI (GitHub Actions) | ✅ `.github/workflows/ci.yml`: unit + integration (n8n in Docker) on every PR and push to `main` |
-| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**; PRs squash-merged |
+| Pushed to GitHub | ✅ `main` pushed; `origin` is **private**; PRs rebase-merged |
 | First real project | ⬜ not chosen; see [backlog.md](backlog.md) |
 
 ## Done
