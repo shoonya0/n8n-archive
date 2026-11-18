@@ -16,7 +16,7 @@
 - Workflow `id` is 16 alphanumeric chars; webhook path `jobs/radar`, `responseMode: responseNode`.
 - 400 messages are copied verbatim from the spec's list.
 - Tests never call the real job APIs.
-- `apiBase` accepted only when it starts with `http://job-fixtures:`.
+- `apiBase` accepted only when it matches `^http://job-fixtures(:<port>)?/?$` (no `new URL()`: not usable in the Code-node sandbox).
 
 ## Review Focus
 

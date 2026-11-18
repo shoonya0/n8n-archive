@@ -52,7 +52,7 @@ data to any third party; a radar that silently drops boards that fail.
 | `profile.excludeTitleKeywords` | optional, default `[]` |
 | `profile.locations` | optional, default `[]` (any location) |
 | `limit` | optional integer 1–50, default `10` |
-| `apiBase` | optional, **tests only**: must start with `http://job-fixtures:`; replaces the real API host |
+| `apiBase` | optional, **tests only**: must match `^http://job-fixtures(:<port>)?/?$`: scheme, host and optional port only (so `http://job-fixtures:@evil.com` is refused); replaces the real API host |
 
 **200 response:**
 

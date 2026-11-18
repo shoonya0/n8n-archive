@@ -1,0 +1,209 @@
+{
+  "id": "jR4d7rKq2LmX9pWb",
+  "name": "Job Radar",
+  "nodes": [
+    {
+      "id": "f635cc3c-ee89-455f-99c4-c2c3e5470078",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "35b7bf10-cda6-4645-a0a0-2c6a07050b81",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "jobs/radar",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "4ecd58a0-7273-4abb-a07a-30a6ffc34a9e",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Validate the radar request and build one fetch item per board.\n// Output: [{ error }] on bad input, else [{ ats, token, url }, ...].\nconst ATS_URLS = {\n  greenhouse: (base, t) => `${base ?? 'https://boards-api.greenhouse.io'}/v1/boards/${t}/jobs`,\n  lever: (base, t) => `${base ?? 'https://api.lever.co'}/v0/postings/${t}?mode=json`,\n  ashby: (base, t) => `${base ?? 'https://api.ashbyhq.com'}/posting-api/job-board/${t}`,\n};\nconst TOKEN = /^[A-Za-z0-9_-]{1,100}$/;\n// Tests only: the docker compose fixture server. A strict pattern instead of new URL()\n// (not usable in n8n's Code-node sandbox); nothing but scheme, host and optional port.\nconst FIXTURE_BASE = /^http:\\/\\/job-fixtures(:\\d{1,5})?\\/?$/;\nconst fail = (error) => [{ json: { error } }];\n\nconst raw = $input.first().json.body;\nconst { boards, profile, limit, apiBase } = raw && typeof raw === 'object' ? raw : {};\n\nif (!Array.isArray(boards) || boards.length === 0 || boards.length > 50)\n  return fail('boards must be a non-empty array of at most 50');\nfor (const b of boards) {\n  if (!Object.prototype.hasOwnProperty.call(ATS_URLS, b?.ats)) return fail(`unsupported ats: ${b?.ats}`);\n  if (typeof b.token !== 'string' || !TOKEN.test(b.token)) return fail(`invalid token: ${b.token}`);\n}\nconst keywords = profile?.titleKeywords;\nif (!Array.isArray(keywords) || !keywords.some((k) => typeof k === 'string' && k.trim()))\n  return fail('profile.titleKeywords is required');\nif (limit !== undefined && !(Number.isInteger(limit) && limit >= 1 && limit <= 50))\n  return fail('limit must be an integer from 1 to 50');\n\nlet base;\nif (apiBase !== undefined) {\n  if (typeof apiBase !== 'string' || !FIXTURE_BASE.test(apiBase)) return fail('apiBase is not allowed');\n  base = apiBase.replace(/\\/$/, '');\n}\n\nreturn boards.map((b) => ({ json: { ats: b.ats, token: b.token, url: ATS_URLS[b.ats](base, b.token) } }));\n"
+      }
+    },
+    {
+      "id": "5676c8a0-12a5-4e08-9bdb-5c347512a3f5",
+      "name": "Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "id": "0b184f9d-8661-4870-bbf9-43f7d7245f9f",
+              "leftValue": "={{ $json.error ?? '' }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6d517256-2eb6-4e65-b028-0116ed619691",
+      "name": "Fetch Board",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        660,
+        -100
+      ],
+      "onError": "continueRegularOutput",
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 15000
+        }
+      }
+    },
+    {
+      "id": "4f68f257-b912-432a-810c-9bd5d727fc3f",
+      "name": "Rank Jobs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        880,
+        -100
+      ],
+      "parameters": {
+        "jsCode": "// Normalize every board's jobs, filter and score them against the profile, dedup,\n// order and limit. Input: one HTTP full response per board, in board order.\n// Output: [{ count, jobs, errors }].\nconst body = $('Webhook').first().json.body;\nconst boards = $('Validate Request').all().map((i) => i.json);\nconst responses = $input.all().map((i) => i.json);\n\nconst clean = (list) =>\n  (Array.isArray(list) ? list : []).filter((k) => typeof k === 'string' && k.trim()).map((k) => k.trim());\nconst titleKeywords = clean(body.profile.titleKeywords);\nconst excludeKeywords = clean(body.profile.excludeTitleKeywords);\nconst locationKeywords = clean(body.profile.locations);\nconst limit = body.limit ?? 10;\n\nconst str = (v) => (typeof v === 'string' ? v.trim() : '');\nconst iso = (v) => {\n  const d = new Date(v);\n  return v == null || Number.isNaN(d.getTime()) ? null : d.toISOString();\n};\nconst has = (text, k) => text.toLowerCase().includes(k.toLowerCase());\n\nconst NORMALIZE = {\n  greenhouse: (data, token) => (Array.isArray(data?.jobs) ? data.jobs : []).map((j) => ({\n    company: str(j.company_name) || token,\n    title: str(j.title),\n    location: str(j.location?.name),\n    url: j.absolute_url,\n    postedAt: iso(j.first_published ?? j.updated_at),\n    remote: false,\n  })),\n  lever: (data, token) => (Array.isArray(data) ? data : []).map((j) => {\n    const all = Array.isArray(j.categories?.allLocations) ? j.categories.allLocations.map(str).filter(Boolean) : [];\n    return {\n      company: token,\n      title: str(j.text),\n      location: all.length ? all.join(' / ') : str(j.categories?.location),\n      url: j.hostedUrl,\n      postedAt: iso(j.createdAt),\n      remote: j.workplaceType === 'remote',\n    };\n  }),\n  ashby: (data, token) => (Array.isArray(data?.jobs) ? data.jobs : [])\n    .filter((j) => j.isListed !== false)\n    .map((j) => ({\n      company: token,\n      title: str(j.title),\n      location: [j.location, ...(Array.isArray(j.secondaryLocations) ? j.secondaryLocations : []).map((l) => l?.location)]\n        .map(str).filter(Boolean).join(' / '),\n      url: j.jobUrl,\n      postedAt: iso(j.publishedAt),\n      remote: j.isRemote === true,\n    })),\n};\n\nconst errors = [];\nconst newest = new Map();\nboards.forEach((board, i) => {\n  const r = responses[i] ?? {};\n  const status = typeof r.statusCode === 'number' ? r.statusCode : 0;\n  if (status < 200 || status > 299) {\n    errors.push({ source: board.ats, board: board.token, status });\n    return;\n  }\n  for (const job of NORMALIZE[board.ats](r.body, board.token)) {\n    const key = `${job.company}|${job.title}|${job.location}`.toLowerCase();\n    const seen = newest.get(key);\n    if (!seen || (job.postedAt ?? '') > (seen.job.postedAt ?? '')) newest.set(key, { board, job });\n  }\n});\n\nconst jobs = [];\nfor (const { board, job } of newest.values()) {\n  if (excludeKeywords.some((k) => has(job.title, k))) continue;\n  const titleHits = titleKeywords.filter((k) => has(job.title, k));\n  if (titleHits.length === 0) continue;\n  const remote = job.remote || /remote/i.test(job.location);\n  const locationHits = locationKeywords.filter(\n    (k) => has(job.location, k) || (k.toLowerCase() === 'remote' && remote),\n  );\n  if (locationKeywords.length > 0 && locationHits.length === 0) continue;\n  jobs.push({\n    source: board.ats,\n    board: board.token,\n    company: job.company,\n    title: job.title,\n    location: job.location,\n    url: job.url,\n    postedAt: job.postedAt,\n    score: 10 * titleHits.length + (locationHits.length > 0 ? 5 : 0),\n    matched: [...titleHits, ...locationHits],\n  });\n}\n\nconst cmp = (a, b) => (a < b ? -1 : a > b ? 1 : 0);\njobs.sort((a, b) =>\n  b.score - a.score || cmp(b.postedAt ?? '', a.postedAt ?? '') || cmp(a.title, b.title));\nconst top = jobs.slice(0, limit);\nreturn [{ json: { count: top.length, jobs: top, errors } }];\n"
+      }
+    },
+    {
+      "id": "265b489c-d1cc-4501-927a-bb2764e8de65",
+      "name": "Respond Jobs",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1100,
+        -100
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    },
+    {
+      "id": "ec58c38c-72bb-4a5a-819c-56034b102fdb",
+      "name": "Respond Invalid",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        100
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ error: $json.error }) }}",
+        "options": {
+          "responseCode": 400
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid?": {
+      "main": [
+        [
+          {
+            "node": "Fetch Board",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond Invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Board": {
+      "main": [
+        [
+          {
+            "node": "Rank Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rank Jobs": {
+      "main": [
+        [
+          {
+            "node": "Respond Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "active": false
+}
