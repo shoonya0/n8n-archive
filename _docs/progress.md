@@ -29,6 +29,9 @@ _Last updated: 2026-11-18_
   PRs are merged with `gh pr merge --rebase`, never squash (squash uses the profile name).
 - **2026-11-18** CI: GitHub Actions runs `npm test`, then starts n8n in Docker, deploys
   and runs `npm run test:integration`.
+- **2026-11-18** Fix: `deploy.mjs` now waits for n8n's "Editor is now accessible" log line
+  after restart. `/healthz` is OK ~3s before published webhooks are registered, which made
+  CI get 404s.
 
 ## Last verified (2026-11-18)
 
