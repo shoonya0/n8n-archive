@@ -50,7 +50,7 @@ Clients need a public HTTPS host (a VPS or n8n Cloud), not the local Docker.
 | Week | Build | Lives in |
 |---|---|---|
 | 1 | #1 CI + #2 secret/dependency protection; #14 service template | GitHub config / template repos |
-| 2 | J1 job radar + J2 tracker | **here** (n8n) |
+| 2 | J1 job radar (**v1 built**: webhook + 3 ATS; v2 = schedule + Telegram) + J2 tracker | **here** (n8n) |
 | 3 | #3 agent setup + #4 PR review | GitHub / optional n8n |
 | 4 | #6 observability + J4 deadlines | **here** (n8n) |
 | 5 | #5 tests/flaky + #12 digest + J3 tailor | here + CI |

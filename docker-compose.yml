@@ -28,5 +28,20 @@ services:
       retries: 30
       start_period: 10s
 
+  # Test-only stand-in for the Greenhouse/Lever/Ashby job-board APIs. Integration
+  # tests point the job radar at http://job-fixtures:8080 so they never hit real APIs.
+  job-fixtures:
+    image: node:22-alpine
+    container_name: job-fixtures
+    restart: unless-stopped
+    command: ["node", "/srv/server.mjs"]
+    volumes:
+      - ./tests/fixtures/job-boards:/srv:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/v1/boards/acme/jobs >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
 volumes:
   n8n_data:

@@ -1,0 +1,39 @@
+[
+  {
+    "id": "a1b2c3d4-0001-4000-8000-000000000001",
+    "text": "Backend Engineer - Payments",
+    "categories": {
+      "commitment": "Full-time",
+      "location": "Pune, India",
+      "team": "Payments",
+      "allLocations": ["Pune, India", "Remote - India"]
+    },
+    "workplaceType": "hybrid",
+    "createdAt": 1794096000000,
+    "hostedUrl": "https://jobs.lever.co/globex/a1b2c3d4-0001-4000-8000-000000000001"
+  },
+  {
+    "id": "a1b2c3d4-0002-4000-8000-000000000002",
+    "text": "Software Engineer, Node",
+    "categories": {
+      "commitment": "Full-time",
+      "location": "Amsterdam",
+      "team": "Platform"
+    },
+    "workplaceType": "remote",
+    "createdAt": 1794096000000,
+    "hostedUrl": "https://jobs.lever.co/globex/a1b2c3d4-0002-4000-8000-000000000002"
+  },
+  {
+    "id": "a1b2c3d4-0003-4000-8000-000000000003",
+    "text": "Backend Intern",
+    "categories": {
+      "commitment": "Internship",
+      "location": "Remote - India",
+      "allLocations": ["Remote - India"]
+    },
+    "workplaceType": "remote",
+    "createdAt": 1794182400000,
+    "hostedUrl": "https://jobs.lever.co/globex/a1b2c3d4-0003-4000-8000-000000000003"
+  }
+]

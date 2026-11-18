@@ -10,6 +10,7 @@ Node's built-in `node:test`.
 workflows/*.json            one workflow per file, fixed 16-char "id" (re-deploy overwrites)
 tests/unit/                 static checks on workflow JSON, no Docker needed   (npm test)
 tests/integration/          real HTTP calls to webhooks on the dockerised n8n  (npm run test:integration)
+tests/fixtures/job-boards/  fake Greenhouse/Lever/Ashby API (compose service job-fixtures) + shared expected data
 scripts/deploy.mjs          import + publish workflows into the container, restart n8n
 docker-compose.yml          n8n pinned to N8N_VERSION (default 2.46.3), data in volume n8n_data
 .env.example                copy to .env, set N8N_ENCRYPTION_KEY (.env is gitignored)
@@ -60,7 +61,9 @@ Across all workflows, webhook `METHOD path` pairs must be unique.
 
 One file per workflow, `tests/integration/<name>.test.mjs`, calls
 `${N8N_BASE_URL:-http://localhost:5678}/webhook/<path>` and asserts the status code and JSON
-body. They run one file at a time (`--test-concurrency=1`). Webhook nodes must use
+body. They run one file at a time (`--test-concurrency=1`). Workflows that call outside
+APIs are tested against a fixture container instead: the job radar takes a test-only
+`apiBase` that must be `http://job-fixtures[:port]`. Webhook nodes must use
 `responseMode: responseNode` or `lastNode` so a test can assert the response.
 
 ## CI (`.github/workflows/ci.yml`)
